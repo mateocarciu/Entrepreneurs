@@ -1,5 +1,18 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { InvestmentsService } from './investments.service';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -16,7 +29,7 @@ export class InvestmentsController {
   constructor(private readonly investmentsService: InvestmentsService) {}
 
   @Post()
-  @Roles(UserRole.INVESTOR)
+  @Roles(UserRole.INVESTOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new investment' })
   @ApiResponse({ status: 201, description: 'Investment created successfully' })
   create(@Body() createInvestmentDto: CreateInvestmentDto, @User() user) {
@@ -38,7 +51,7 @@ export class InvestmentsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.INVESTOR)
+  @Roles(UserRole.INVESTOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete an investment' })
   @ApiResponse({ status: 200, description: 'Investment deleted successfully' })
   remove(@Param('id') id: string, @User() user) {

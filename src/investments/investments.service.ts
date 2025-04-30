@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Investment } from './entities/investment.entity';
@@ -11,7 +15,10 @@ export class InvestmentsService {
     private investmentsRepository: Repository<Investment>,
   ) {}
 
-  async create(createInvestmentDto: CreateInvestmentDto, investorId: number): Promise<Investment> {
+  async create(
+    createInvestmentDto: CreateInvestmentDto,
+    investorId: number,
+  ): Promise<Investment> {
     const investment = this.investmentsRepository.create({
       ...createInvestmentDto,
       investor: { id: investorId },
@@ -45,9 +52,11 @@ export class InvestmentsService {
     }
 
     if (investment.investor.id !== investorId) {
-      throw new ForbiddenException('Cannot delete other investor\'s investments');
+      throw new ForbiddenException(
+        "Cannot delete other investor's investments",
+      );
     }
 
     await this.investmentsRepository.remove(investment);
   }
-} 
+}

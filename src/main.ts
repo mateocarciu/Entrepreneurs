@@ -11,7 +11,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 
-async function bootstrap() {
+async function main() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
@@ -21,6 +21,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Entrepreneur Platform API')
@@ -42,4 +43,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
-bootstrap();
+main();

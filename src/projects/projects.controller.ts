@@ -15,18 +15,33 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../common/enums/roles.enum';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { User } from '../common/decorators/user.decorator';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('projects')
+@ApiBearerAuth()
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
   @Roles(UserRole.ENTREPRENEUR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new project' })
+  @ApiResponse({ status: 201, description: 'Project successfully created.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Bearer token is missing or invalid.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have required role.',
+  })
   create(@Body() createProjectDto: CreateProjectDto, @User() user) {
     return this.projectsService.create(createProjectDto, user.id);
   }
@@ -44,7 +59,7 @@ export class ProjectsController {
   }
 
   @Put(':id')
-  @Roles(UserRole.ENTREPRENEUR)
+  @Roles(UserRole.ENTREPRENEUR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Update a project' })
   update(
     @Param('id') id: string,

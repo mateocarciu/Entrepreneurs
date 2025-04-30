@@ -9,4 +9,4 @@ import { Investment } from './entities/investment.entity';
   providers: [InvestmentsService],
   controllers: [InvestmentsController],
 })
-export class InvestmentsModule {} 
+export class InvestmentsModule {}
