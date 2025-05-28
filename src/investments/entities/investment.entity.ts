@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Project } from '../../projects/entities/project.entity';
 
@@ -10,12 +16,12 @@ export class Investment {
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
 
-  @ManyToOne(() => User, user => user.investments)
+  @ManyToOne(() => User, (user) => user.investments)
   investor: User;
 
-  @ManyToOne(() => Project, project => project.investments)
+  @ManyToOne(() => Project, (project) => project.investments)
   project: Project;
 
   @CreateDateColumn()
   createdAt: Date;
-} 
+}

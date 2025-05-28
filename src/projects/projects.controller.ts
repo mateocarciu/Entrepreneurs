@@ -23,6 +23,12 @@ import {
 } from '@nestjs/swagger';
 import { User } from '../common/decorators/user.decorator';
 
+interface AuthenticatedUser {
+  id: number;
+  email: string;
+  role: UserRole;
+}
+
 @Controller('projects')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('projects')
@@ -42,7 +48,10 @@ export class ProjectsController {
     status: 403,
     description: 'Forbidden - User does not have required role.',
   })
-  create(@Body() createProjectDto: CreateProjectDto, @User() user) {
+  create(
+    @Body() createProjectDto: CreateProjectDto,
+    @User() user: AuthenticatedUser,
+  ) {
     return this.projectsService.create(createProjectDto, user.id);
   }
 
@@ -50,6 +59,13 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Get all projects' })
   findAll() {
     return this.projectsService.findAll();
+  }
+
+  @Get('recommended')
+  @ApiOperation({ summary: 'Get recommended projects based on user interests' })
+  @ApiResponse({ status: 200, description: 'List of recommended projects.' })
+  getRecommendedProjects(@User() user: AuthenticatedUser) {
+    return this.projectsService.getRecommendedProjects(user.id);
   }
 
   @Get(':id')
@@ -64,7 +80,7 @@ export class ProjectsController {
   update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
-    @User() user,
+    @User() user: AuthenticatedUser,
   ) {
     return this.projectsService.update(
       +id,
@@ -77,7 +93,7 @@ export class ProjectsController {
   @Delete(':id')
   @Roles(UserRole.ENTREPRENEUR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete a project' })
-  remove(@Param('id') id: string, @User() user) {
+  remove(@Param('id') id: string, @User() user: AuthenticatedUser) {
     return this.projectsService.remove(+id, user.id, user.role);
   }
 }

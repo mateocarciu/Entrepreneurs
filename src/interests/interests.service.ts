@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Interest } from './entities/interest.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -27,7 +27,14 @@ export class InterestsService {
       throw new NotFoundException('User not found');
     }
 
-    const interests = await this.interestsRepository.findByIds(interestIds);
+    const interests = await this.interestsRepository.findBy({
+      id: In(interestIds),
+    });
+
+    if (interests.length !== interestIds.length) {
+      throw new NotFoundException('Some interests not found');
+    }
+
     user.interests = interests;
     await this.usersRepository.save(user);
   }
@@ -43,5 +50,70 @@ export class InterestsService {
     }
 
     return user.interests;
+  }
+
+  async create(name: string, description?: string): Promise<Interest> {
+    const interest = this.interestsRepository.create({ name, description });
+    return await this.interestsRepository.save(interest);
+  }
+
+  async seedDefaultInterests(): Promise<void> {
+    const existingInterests = await this.interestsRepository.count();
+
+    if (existingInterests === 0) {
+      const defaultInterests = [
+        {
+          name: 'Technology',
+          description: 'Software, hardware, and digital innovation',
+        },
+        {
+          name: 'Finance',
+          description: 'Financial services, banking, and investment',
+        },
+        {
+          name: 'Healthcare',
+          description:
+            'Medical technology, healthcare services, and biotechnology',
+        },
+        {
+          name: 'E-commerce',
+          description:
+            'Online retail, marketplace platforms, and digital commerce',
+        },
+        {
+          name: 'Education',
+          description: 'EdTech, online learning, and educational services',
+        },
+        {
+          name: 'Sustainability',
+          description: 'Environmental solutions and green technology',
+        },
+        {
+          name: 'Real Estate',
+          description:
+            'Property development, PropTech, and real estate services',
+        },
+        {
+          name: 'Food & Beverage',
+          description:
+            'Restaurant chains, food delivery, and beverage industry',
+        },
+        {
+          name: 'Transportation',
+          description:
+            'Mobility solutions, logistics, and transportation technology',
+        },
+        {
+          name: 'Entertainment',
+          description: 'Media, gaming, and entertainment platforms',
+        },
+      ];
+
+      for (const interestData of defaultInterests) {
+        await this.create(interestData.name, interestData.description);
+      }
+
+      console.log('✅ Default interests have been seeded to the database');
+    }
   }
 }

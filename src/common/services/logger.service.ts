@@ -15,4 +15,4 @@ export class LoggerService extends Logger {
   log(message: string) {
     super.log(message);
   }
-} 
+}

@@ -27,10 +27,10 @@ describe('AppController (e2e)', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
-        role: 'entrepreneur'
+        role: 'entrepreneur',
       })
       .expect(201)
-      .expect(res => {
+      .expect((res) => {
         expect(res.body.data.access_token).toBeDefined();
       });
   });
@@ -40,10 +40,10 @@ describe('AppController (e2e)', () => {
       .post('/auth/login')
       .send({
         email: 'test@test.com',
-        password: 'password123'
+        password: 'password123',
       })
       .expect(200)
-      .expect(res => {
+      .expect((res) => {
         authToken = res.body.data.access_token;
         expect(authToken).toBeDefined();
       });

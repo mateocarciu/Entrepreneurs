@@ -21,6 +21,12 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../common/enums/roles.enum';
 import { User } from '../common/decorators/user.decorator';
 
+interface AuthenticatedUser {
+  id: number;
+  email: string;
+  role: UserRole;
+}
+
 @ApiTags('Investments')
 @ApiBearerAuth()
 @Controller('investments')
@@ -32,14 +38,17 @@ export class InvestmentsController {
   @Roles(UserRole.INVESTOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new investment' })
   @ApiResponse({ status: 201, description: 'Investment created successfully' })
-  create(@Body() createInvestmentDto: CreateInvestmentDto, @User() user) {
+  create(
+    @Body() createInvestmentDto: CreateInvestmentDto,
+    @User() user: AuthenticatedUser,
+  ) {
     return this.investmentsService.create(createInvestmentDto, user.id);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all investments for current user' })
   @ApiResponse({ status: 200, description: 'List of user investments' })
-  findMyInvestments(@User() user) {
+  findMyInvestments(@User() user: AuthenticatedUser) {
     return this.investmentsService.findByInvestor(user.id);
   }
 
@@ -54,7 +63,7 @@ export class InvestmentsController {
   @Roles(UserRole.INVESTOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete an investment' })
   @ApiResponse({ status: 200, description: 'Investment deleted successfully' })
-  remove(@Param('id') id: string, @User() user) {
+  remove(@Param('id') id: string, @User() user: AuthenticatedUser) {
     return this.investmentsService.remove(+id, user.id);
   }
 }

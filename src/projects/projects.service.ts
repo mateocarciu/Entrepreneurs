@@ -103,7 +103,6 @@ export class ProjectsService {
       .where('project.category IN (:...interests)', {
         interests: interestNames,
       })
-      .orderBy('project.createdAt', 'DESC')
       .take(10)
       .getMany();
   }

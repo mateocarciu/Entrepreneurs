@@ -8,6 +8,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { InterestsService } from './interests/interests.service';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 
@@ -40,6 +41,10 @@ async function main() {
   });
 
   app.enableCors();
+
+  // Seed default interests
+  const interestsService = app.get(InterestsService);
+  await interestsService.seedDefaultInterests();
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
